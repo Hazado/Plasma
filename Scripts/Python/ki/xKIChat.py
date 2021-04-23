@@ -835,6 +835,7 @@ class CommandsProcessor:
             commands.update(kCommands.Internal)
         commands.update(kCommands.EasterEggs)
         commands.update(kCommands.Other)
+        commands.update(kCommands.MarkerEditor)
 
         # Does the message contain a standard command?
         for command, function in commands.items():
@@ -1506,3 +1507,32 @@ class CommandsProcessor:
             PtSendKIMessage(kKIChatStatusMsg, "{} rolled a single {}-sided die with a result of {}.".format(PtGetLocalPlayer().getPlayerName(), num_face, roll[0]))
         else:
             PtSendKIMessage(kKIChatStatusMsg, "{} rolled {}d{} with a result of {} for a total of {}.".format(PtGetLocalPlayer().getPlayerName(), num_dice, num_face, roll, sum(roll)))        
+
+    #~~~~~~~~~~~~~~~~~~~~~~~~#
+    # Marker Editor Commands #
+    #~~~~~~~~~~~~~~~~~~~~~~~~#
+
+    ## Downloads the specified Marker Game to a file.
+    def DownloadGame(self, gameID):
+
+        if gameID is not None:
+            try:
+                gameID = int(gameID)
+                xMarkerEditor.DownloadGame(self, gameID)
+            except ValueError:
+                self.DisplayStatusMessage("Please specify a valid numeric ID.")
+        else:
+            self.DisplayStatusMessage("Please specify the ID of the game you wish to download.")
+
+    ## Uploads the specified Marker Game from a file.
+    def UploadGame(self, gameFileName):
+
+        if gameFileName:
+            xMarkerEditor.UploadGame(self, gameFileName)
+        else:
+            self.DisplayStatusMessage("Please specify the filename in \"Games\" you want opened.")
+
+    ## Lists all the Marker Games available for download.
+    def ListGames(self, params):
+
+        xMarkerEditor.ListGames(self)
