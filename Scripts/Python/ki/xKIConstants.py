@@ -262,6 +262,9 @@ class kCommands:
              "/loadclothing" : "LoadClothing",
              "/threaten" : "CoopExample",
              "/roll": "RollDice"}
+    MarkerEditor = {"/download" : "DownloadGame",
+                    "/upload" : "UploadGame",
+                    "/list" : "ListGames"}
 
 ## Numeric limits for the KI.
 class kLimits:
