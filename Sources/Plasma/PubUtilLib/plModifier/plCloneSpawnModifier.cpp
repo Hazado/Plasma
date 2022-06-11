@@ -58,14 +58,14 @@ plCloneSpawnModifier::plCloneSpawnModifier() : fExportTime(false)
 
 void plCloneSpawnModifier::Read(hsStream *s, hsResMgr *mgr)
 {
-    fTemplateName = s->ReadSafeString();
     plSingleModifier::Read(s, mgr);
+    fTemplateName = s->ReadSafeString();
 }
 
 void plCloneSpawnModifier::Write(hsStream *s, hsResMgr *mgr)
 {
-    s->WriteSafeString(fTemplateName);
     plSingleModifier::Write(s, mgr);
+    s->WriteSafeString(fTemplateName);
 }
 
 void plCloneSpawnModifier::SetTarget(plSceneObject* so)
