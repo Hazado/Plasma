@@ -153,6 +153,8 @@ kFakeColorSlideBtn1=63
 kFakeColorSlideBtn2=64
 kFakeSkinSlideBtn=65
 kFakeHairSlideBtn=66
+kColorbarReset1=67
+kColorbarReset2=68
 kSliderMax = 12.0
 
 #----ClothingListboxes
@@ -1041,6 +1043,10 @@ class xAvatarCustomization(ptModifier):
                         picCam.setAspectRatio(1)
                         AvCustGUI.dialog.hide()
                         PtStartScreenCapture(self.key, 1024, 1024)
+                    elif btnID == kColorbarReset1 or btnID == kColorbarReset2:
+                        self.dirty = 1 # we changed something! so show the "reset" button
+                        ptGUIControlButton(AvCustGUI.dialog.getControlFromTag(kAvatarResetID)).show()
+                        #self.IResetShowingItem(tagID)
 
                 elif isinstance(control,ptGUIControlCheckBox):
                     chkBoxID = control.getTagID()
@@ -1594,6 +1600,65 @@ class xAvatarCustomization(ptModifier):
                         if item.type == kHairClothingItem or item.coloredAsHair:
                             avatar.avatar.tintClothingItemLayer(item.name,colorit,1)
 
+    def IResetShowingItem(self,controlID):
+        "Reset whatever clothing type is selected with color1 slider"
+        global CLxref
+        global WornList
+
+        # Find what to color
+        panelRG = ptGUIControlRadioGroup(AvCustGUI.dialog.getControlFromTag(kPanelsRGID))
+        clothing_panel = panelRG.getValue()
+        foundItem = 0
+        if clothing_panel >= 0 and clothing_panel < len(CLxref):
+            clothing_type = CLxref[clothing_panel][0]
+            PtDebugPrint("clothing_type = ", clothing_type)
+            # find the item that is worn that is in this clothing type
+            wornItem = FindWornItem(clothing_type)
+            # did we find the item that is being worn in this clothing group?
+            if wornItem is not None:
+                # if the saturation is zero then don't allow tiniting
+                if controlID == kColorbarReset1 or controlID == kColorbarReset2:
+                    #Make sure that we're not zoomed in (changing eye color)
+                    panelRG = ptGUIControlRadioGroup(AvCustGUI.dialog.getControlFromTag(kPanelsRGID))
+                    rgVal = panelRG.getValue()
+
+                    # get the color
+                    if controlID == kColorbarReset2:
+                        layer = 2
+                        colormap = ptGUIControlClickMap(AvCustGUI.dialog.getControlFromTag(kColor2ClickMap)).getLastMouseUpPoint()
+                        colorit = ColorMaterial.map.getPixelColor(colormap.getX(),colormap.getY())
+                        self.IDrawPickerThingy(kColor2ClickMap,colorit)
+                    else:
+                        layer = 1
+                        colormap = ptGUIControlClickMap(AvCustGUI.dialog.getControlFromTag(kColor1ClickMap)).getLastMouseUpPoint()
+                        colorit = ColorMaterial.map.getPixelColor(colormap.getX(),colormap.getY())
+                        self.IDrawPickerThingy(kColor1ClickMap,colorit)
+                    avatar = PtGetLocalAvatar()
+                    clothing_group = TheCloset[CLxref[clothing_panel][1]]
+                    if clothing_group.numberItems > 1:
+                        matchingItem = avatar.avatar.getMatchingClothingItem(wornItem.name)
+                        if isinstance(matchingItem, list):
+                            avatar.avatar.tintClothingItemLayer(matchingItem[0],colorit,layer,0)
+                    avatar.avatar.tintClothingItemLayer(wornItem.name,colorit,layer)
+                    # if we are messing with the face, color the accessory too! (only on layer 2 color)
+                    if clothing_type == kFaceClothingItem and layer == 2:
+                        for aitem in clothing_group.accessories:
+                            if IsWearing(aitem):
+                                avatar.avatar.tintClothingItem(aitem.name,colorit)
+                elif controlID == kHairClickMap:
+                    # then this is a hair tinting affair
+
+
+                    colormap = ptGUIControlClickMap(AvCustGUI.dialog.getControlFromTag(kHairClickMap)).getLastMouseUpPoint()
+                    colorit = HairMaterial.map.getPixelColor(colormap.getX(),colormap.getY())
+                    self.IDrawPickerThingy(kHairClickMap,lastcolor1)
+                    avatar = PtGetLocalAvatar()
+                    # find all the hair tinting items to be colored as hair
+                    for item in WornList:
+                        # there is hair and there is hair on the face (also), so color both!
+                        if item.type == kHairClothingItem or item.coloredAsHair:
+                            avatar.avatar.tintClothingItemLayer(item.name,colorit,1)
+
     def IMorphOneItem(self,knobID,itemName):
         "Morph a specific item"
         global TheCloset
@@ -1793,37 +1858,51 @@ class xAvatarCustomization(ptModifier):
 
 
     def IShowColorPicker(self,id):
+        resetBtn = None
         if (id == kColor1ClickMap):
             clickMap = ptGUIControlValue(AvCustGUI.dialog.getControlFromTag(kColor1ClickMap))
+            resetBtn = ptGUIControlButton(AvCustGUI.dialog.getControlFromTag(kColorbarReset1))
         elif (id == kColor2ClickMap):
             clickMap = ptGUIControlValue(AvCustGUI.dialog.getControlFromTag(kColor2ClickMap))
+            resetBtn = ptGUIControlButton(AvCustGUI.dialog.getControlFromTag(kColorbarReset2))
         elif (id == kHairClickMap):
             clickMap = ptGUIControlValue(AvCustGUI.dialog.getControlFromTag(kHairClickMap))
+            resetBtn = ptGUIControlButton(AvCustGUI.dialog.getControlFromTag(kColorbarReset1))
         else:
             clickMap = ptGUIControlValue(AvCustGUI.dialog.getControlFromTag(kSkinClickMap))
 
         clickMap.enable()
         clickMap.show()
+        if not resetBtn == None:
+            resetBtn.enable()
+            resetBtn.show()
 
     def IHideColorPicker(self,id):
         textBox = None
+        resetBtn = None
         if (id == kColor1ClickMap):
             textBox = ptGUIControlTextBox(AvCustGUI.dialog.getControlFromTag(kColorbarName1))
             clickMap = ptGUIControlValue(AvCustGUI.dialog.getControlFromTag(kColor1ClickMap))
             texMap = Color1Map.textmap
+            resetBtn = ptGUIControlButton(AvCustGUI.dialog.getControlFromTag(kColorbarReset1))
         elif (id == kColor2ClickMap):
             textBox = ptGUIControlTextBox(AvCustGUI.dialog.getControlFromTag(kColorbarName2))
             clickMap = ptGUIControlValue(AvCustGUI.dialog.getControlFromTag(kColor2ClickMap))
             texMap = Color2Map.textmap
+            resetBtn = ptGUIControlButton(AvCustGUI.dialog.getControlFromTag(kColorbarReset2))
         elif (id == kHairClickMap):
             textBox = ptGUIControlTextBox(AvCustGUI.dialog.getControlFromTag(kColorbarName1))
             clickMap = ptGUIControlValue(AvCustGUI.dialog.getControlFromTag(kHairClickMap))
             texMap = Color1Map.textmap
+            resetBtn = ptGUIControlButton(AvCustGUI.dialog.getControlFromTag(kColorbarReset1))
         else:
             clickMap = ptGUIControlValue(AvCustGUI.dialog.getControlFromTag(kSkinClickMap))
             texMap = SkinMap.textmap
         clickMap.disable()
         clickMap.hide()
+        if not resetBtn == None:
+            resetBtn.disable()
+            resetBtn.hide()
         if not textBox == None:
             textBox.setString("")
         texMap.clearToColor(ptColor(0,0,0,0))
