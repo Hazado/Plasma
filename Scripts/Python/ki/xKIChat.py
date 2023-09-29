@@ -1539,6 +1539,14 @@ class CommandsProcessor:
                 self.chatMgr.AddChatLine(None, "You search... but find no other feathers.", 0)
             else:
                 self.chatMgr.AddChatLine(None, "You search... but then suddenly stop when you realize that you are missing the \"Raven\" feather.", 0)
+        elif currentAge == "EderNaybree":
+            if self.chatMgr.gFeather == 16:
+                self.chatMgr.AddChatLine(None, "You search... and find a \"Green\" feather and put it in your pocket.", 0)
+                self.chatMgr.gFeather += 1
+            elif self.chatMgr.gFeather > 16:
+                self.chatMgr.AddChatLine(None, "You search... but find no other feathers.", 0)
+            else:
+                self.chatMgr.AddChatLine(None, "You search... but then suddenly stop when you realize that you are missing the \"Dove\" feather.", 0)
         else:
             self.chatMgr.AddChatLine(None, "There are no feathers here.", 0)
             return
@@ -1579,6 +1587,8 @@ class CommandsProcessor:
                     pOut += " and a \"Raven\" feather"
                 if self.chatMgr.gFeather > 15:
                     pOut += " and a \"Dove\" feather"
+                if self.chatMgr.gFeather > 16:
+                    pOut += " and a \"Green\" feather"
                 pOut += "."
                 self.chatMgr.AddChatLine(None, pOut, 0)
         else:

@@ -159,6 +159,11 @@ kEasterEggs = {
     "ChisoPreniv": {
         "see": "All around you are bookshelves upon bookshelves but not a book to read. To the south is a large set of windows that reveal a vast landscape that you'll never be able to access.",
         "exits": "... I guess in this library, the only exit is through the window, but let's not do that."
+    },
+    "EderNaybree": {
+        "see": "You are in a Garden that is under some form of extreme lighting- given a 15ish hour cycle, you're going to find something weird somewhere.",
+        "exits": " West, if you consider the Zero Line as pointing Due North. Unless I have it backwards, in which case it's to the East.",
+        "people": " a whole lot of Statues of the Hunt Goddess Chezahcen."
     }
 }
 
@@ -200,14 +205,16 @@ class kAges:
         "FehnirHouse": "D'ni-Fehnir's House",
         "GoMePubNew": "D'ni-Messengers' Pub - Ae'gura",
         "ChisoPreniv": "Chiso Preniv",
-        "VeeTsah": "Veelay Tsahvahn"
+        "VeeTsah": "Veelay Tsahvahn",
+        "FahetsHighgarden": "Fahets: Highgarden", 
+        "EderBahvahnter": "Eder Bahvahnter"
     }
     Hide = {"BahroCave", "PelletBahroCave", "Pellet Cave", "LiveBahroCave", "LiveBahroCaves"}
     NoInvite = {
         "Personal", "Nexus", "Cleft", "AvatarCustomization", "city",
         "BahroCave", "LiveBahroCave", "LiveBahroCaves", 
         "BaronCityOffice", "ErcanaCitySilo", "GreatZero", "Shaft",
-        "Descent", "Spyroom", "Myst", "ChisoPreniv"
+        "Descent", "Spyroom", "Myst", "ChisoPreniv", "EderBahvahnter"
     }
     Replace = {
         "Ercana": "Er'cana",
